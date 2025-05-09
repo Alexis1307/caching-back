@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: 'build/libs/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,6 +51,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: java-app
+
+      - name: Move JAR to root for deployment
+        run: mv java-app/*.jar ./
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -65,5 +68,5 @@ jobs:
         with:
           app-name: 'caching-back'
           slot-name: 'Production'
-          package: '*.jar'
+          package: './*.jar'
           
