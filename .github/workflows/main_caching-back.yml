@@ -68,5 +68,5 @@ jobs:
         with:
           app-name: 'caching-back'
           slot-name: 'Production'
-          package: '/*.jar'
+          package: '*.jar'
           
