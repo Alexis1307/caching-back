@@ -37,3 +37,7 @@ jobs:
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: caching-back-container
             location: 'west us'
+            environment-variables: |
+              URL_DB=${{ secrets.URL_DB }}
+              USERNAME_DB=${{ secrets.USERNAME_DB }}
+              PASSWORD_DB=${{ secrets.PASSWORD_DB }}
