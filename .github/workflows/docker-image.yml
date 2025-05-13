@@ -1,0 +1,38 @@
+name: Docker Image CI
+on: [push]
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@master
+          
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        - name: Give execute permission to Gradle wrapper
+          run: chmod +x ./gradlew
+
+        - name: Build project with Gradle
+          run: ./gradlew build -x test
+        
+        - uses: azure/docker-login@v1
+          with:
+            login-server: deploymentregistry02.azurecr.io
+            username: ${{ secrets.REGISTRY_USERNAME }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+        - run: |
+            docker build --tag deploymentregistry02.azurecr.io/caching-back:${{ github.sha }} --build-arg JAR_FILE=build/libs/caching-0.0.1-SNAPSHOT.jar .
+            docker push deploymentregistry02.azurecr.io/caching-back:${{ github.sha }}
+
+        - name: 'Deploy to Azure Container Instances'
+          uses: 'azure/aci-deploy@v1'
+          with:
+            resource-group: deployment02
+            image: deploymentregistry02.azurecr.io/caching-back:${{ github.sha }}
+            registry-username: ${{ secrets.REGISTRY_USERNAME }}
+            registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+            name: caching-back-container
+            location: 'west us'
