@@ -31,6 +31,7 @@ jobs:
           uses: 'azure/aci-deploy@v1'
           with:
             resource-group: deployment02
+            dns-name-label: cachingback
             image: deploymentregistry02.azurecr.io/caching-back:${{ github.sha }}
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
